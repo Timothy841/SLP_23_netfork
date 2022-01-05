@@ -15,6 +15,7 @@ int main() {
 	int sd = server_socket();
 	
 	listen (sd, 5);
+	accept(sd
 	//while (1){
 		/*if (parent){
 			parent = 0;
