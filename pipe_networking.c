@@ -8,33 +8,21 @@
   Sets *to_client to the file descriptor to the downstream pipe.
   returns the file descriptor for the upstream pipe.
   =========================*/
-int server_handshake(int *to_client, int *parent) {
-  char line[100];
-  char pipe[100];
-  mkfifo(WKP, 0644);//create WKP
-  int from_client = open(WKP, O_RDONLY);//blocks
-  read(from_client, line, 100);//get private pipe from client
-  *parent = fork();
-  if (*parent){
-    remove(WKP);
-    close(from_client);
-    return 0;
-  }
-  sscanf(line, "%s\n", line);
-  strcpy(pipe, line);
-  mkfifo(line, 0644);
-  *to_client = open(line, O_WRONLY);
-  strcat(line, "1");
-  write(*to_client, line, 100);
-  read(from_client, line, 100);
-  if (strcmp(line, strcat(pipe, "12"))){
-    printf("%s, %s\n", pipe, line);
-    printf("Connection unsecure.\n");
-    exit(0);
-  }
-  sscanf(line, "%s\n", line);
-  printf("Connection established\n");
-  return from_client;
+int server_socket() {
+	int status;
+	struct addrinfo *hints, *servinfo;
+	hints = calloc(1, sizeof(struct addrinfo));
+	hints->ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
+	hints->ai_socktype = SOCK_STREAM; // TCP stream sockets
+	hints->ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+	if ((status = getaddrinfo(NULL, "9001", hints, &servinfo)) != 0) {
+		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+		exit(1);
+	}
+	int sd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+	bind(sd, servinfo->ai_addr, servinfo->ai_addrlen);
+	return sd;
 }
 
 
@@ -46,25 +34,6 @@ int server_handshake(int *to_client, int *parent) {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int client_handshake(int *to_server) {
-  char line[100];
-  snprintf(line, 100, "%d", getpid());//get private pipe name
-  char pipe[100];
-  strcpy(pipe, line);
-  mkfifo(WKP, 0644);//makes private pipe
-  *to_server = open(WKP, O_WRONLY);//Connect to WKP
-  write(*to_server, line, 100);//sends private pipe
-  mkfifo(pipe, 0644);//makes private pipe
-  int from_server = open(pipe, O_RDONLY);//block on private pipe
-  read(from_server, line, 100);
-  remove(pipe);
-  sscanf(line, "%s\n", line);
-  if (strcmp(line, strcat(pipe, "1"))){
-    printf("Connection unsecure.\n");
-    exit(0);
-  }
-  strcat(line, "2");
-  write(*to_server, line, 100);
-  printf("Connection established\n");
-  printf("%d %d\n", *to_server, from_server);
-  return from_server;
+	int from_server;
+	return from_server;
 }

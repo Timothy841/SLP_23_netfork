@@ -10,14 +10,13 @@ void change(char *line){
 
 int main() {
 
-	int to_client;
-	int from_client;
 	int parent;
 	char line[100];
-
-	while (1){
-		from_client = server_handshake( &to_client, &parent );
-		if (parent){
+	int sd = server_socket();
+	
+	listen (sd, 5);
+	//while (1){
+		/*if (parent){
 			parent = 0;
 			continue;
 		}
@@ -29,5 +28,5 @@ int main() {
 			write(to_client, line, 100);
 		}
 		return 0;
-	}
+	}*/
 }
