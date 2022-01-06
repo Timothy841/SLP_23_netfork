@@ -30,5 +30,8 @@ int main() {
 			}
 			return 0;
 		}
+		else{
+			close(client_socket);
+		}
 	}
 }
