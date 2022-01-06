@@ -10,24 +10,25 @@ void change(char *line){
 
 int main() {
 
-	int parent;
-	char line[100];
 	int sd = server_socket();
-	
-	listen (sd, 5);
-	accept(sd
-	//while (1){
-		/*if (parent){
-			parent = 0;
-			continue;
-		}
-		while (read(from_client, line, 100)){
-			if (strcmp(line, "exit1") == 0){
-				break;
+	printf("Created socket, listening\n");
+
+	while(1){
+		int client_socket = server_connect(sd);
+		printf("Received connection\n");
+		int parent = fork();
+		if (parent == 0){//child. parent goes back to accept new client.
+			while (1){
+				char *line = calloc(100,1);
+				read(client_socket, line, 100);
+				if (strcmp(line, "exit1") == 0){
+					break;
+				}
+				change(line);
+				write(client_socket, line, 100);
+				free(line);
 			}
-			change(line);
-			write(to_client, line, 100);
+			return 0;
 		}
-		return 0;
-	}*/
+	}
 }

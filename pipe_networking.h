@@ -19,6 +19,7 @@
 #define BUFFER_SIZE 1000
 
 int server_socket();
-int client_handshake(int *to_server);
+int server_connect(int sd);
+int client_socket();
 
 #endif
